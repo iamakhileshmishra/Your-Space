@@ -1,0 +1,13 @@
+
+<%- include('partials/header'); -%>
+    <div id="comp-container">
+        <h1>Enter password for <%=title%></h1>
+        <form action="/posts/<%=postId%>/view" method="post">
+            <div class="mb-3">
+                <label for="password">Password</label>
+                <input class="form-control" id="password" name="password" type="password" required>
+            </div>
+            <button class="btn btn-primary publish-btn" type="submit" name="button">View</button>
+        </form>
+
+        <%- include( 'partials/footer' ); -%>

@@ -1,0 +1,31 @@
+<%- include('partials/header'); -%>
+    <div id="post-container">
+        <h1 class="post-h1">
+            <%=title%>
+        </h1>
+        <p class="post-desc">
+            <%=content%>
+        </p>
+        <a href="/posts/<%=postId%>/view">
+            <button class="btn btn-info view-btn">
+                <i class="bi bi-eye"></i>
+                View</button>
+        </a>
+        <a href="/posts/<%=postId%>/download">
+            <button class="btn btn-success download-btn">
+                <i class="bi bi-download"></i>
+                Download </button>
+        </a>
+        <form class="edit" action="/posts/<%=postId%>/edit" method="get">
+            <button class="btn btn-primary edit-btn" type="submit" title="Edit this blog">
+                <a class="btn-a"><i class="bi bi-pencil-square"></i></a> Edit
+            </button>
+        </form>
+        <form class="delete" action="/posts/<%=postId%>/delete" method="POST">
+            <button class="btn btn-danger delete-btn" type="submit" title="Delete this blog">
+                <a class="btn-a"><i class="bi bi-trash"></i></a> Delete
+            </button>
+        </form>
+        
+
+        <%- include('partials/footer'); -%>

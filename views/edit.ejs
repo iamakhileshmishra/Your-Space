@@ -1,0 +1,30 @@
+<%- include('partials/header'); -%>
+<div id="comp-container">
+    <div>
+        <h1>Edit <%=post.title%>
+        </h1>
+    </div>
+    <div>
+        <form action="/posts/<%=post._id%>/edit/?_method=PUT" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="old-password">Old Password</label>
+                <input class="form-control" id="old-password" name="password" type="password" />
+            </div>
+            <div class="mb-3">
+                <label for="post-title">Title</label>
+                <input class="form-control" id="post-title" name="title" type="text" placeholder="Input title" required
+                    autocomplete="off" value="<%=post.title%>">
+            </div>
+            <div class="mb-3">
+                <label for="postcontent">Post</label>
+                <textarea class="form-control text-area" id="postcontent" name="content" rows="4" cols="40" required
+                    placeholder="Add Some Description about the File ..............."><%=post.content%></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="myfile">Select a file:</label>
+                <input type="file" id="myfile" name="myfile" value="/uploads/files/<%=post.file%>" required>
+            </div>
+            <button class="btn btn-primary publish-btn" type="submit" name="button">Update</button>
+        </form>
+    </div>
+    <%- include( 'partials/footer' ); -%>

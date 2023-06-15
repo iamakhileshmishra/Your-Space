@@ -1,0 +1,114 @@
+body {
+  background-image: linear-gradient(
+    to left top,
+    #cc33ff,
+    #fe2ed8,
+    #ff78c2,
+    #c69ba6,
+    #f7b4b4
+  );
+  font-family: "Fredoka", sans-serif;
+  background-attachment: fixed;
+  position: relative;
+  margin: 0;
+  padding-bottom: 3rem;
+  min-height: 100%;
+}
+#container-m {
+  text-align: center;
+}
+#comp-container {
+  margin-left: 8vw;
+  margin-right: 8vw;
+  margin-bottom: 8vh;
+}
+#post-container {
+  margin-left: 8vw;
+  margin-right: 8vw;
+  margin-bottom: 8vh;
+  text-align: center;
+}
+.home-icon {
+  text-align: left;
+  margin: 2rem;
+  font-size: 5vh;
+}
+.intro-title {
+  font-family: "Great Vibes", cursive;
+  margin: 4rem 4rem 0.5rem 4rem;
+  font-size: 17vw;
+}
+.intro-line {
+  font-family: "Dancing Script", Verdana;
+  font-size: 4vw;
+}
+.btn-upload {
+  border-radius: 25px;
+  margin: 10px 0px 20px 0px;
+}
+/* .box-s {
+  
+} */
+footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+}
+a {
+  text-decoration: none;
+  color: white;
+}
+a:hover {
+  color: rgba(104, 222, 243, 0.9);
+}
+.box-a {
+  text-decoration: none;
+  color: black;
+}
+.box-a:hover {
+  color: rgb(239, 245, 186);
+}
+.card-f {
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  text-align: center;
+  width: 300px;
+  margin: 50px;
+  background-image: linear-gradient(
+    to right bottom,
+    #cc33ff,
+    #fb4eda,
+    #ff78c2,
+    #b58d98,
+    #ffcccc
+  );
+  font-family: "Fredoka", sans-serif;
+  background-attachment: fixed;
+}
+.open-btn {
+  border-radius: 15px;
+  background-color: #cc33ff;
+}
+.post-h1 {
+  text-align: center;
+  color: #000000;
+}
+.post-desc {
+  margin: 3vw;
+}
+.view-btn,
+.edit-btn,
+.download-btn,
+.delete-btn {
+  text-align: center;
+  margin: 1vh;
+}
+
+@media only screen and (max-width: 960px) {
+  .card-f {
+    width: 238px;
+    margin: 50px;
+  }
+}

@@ -1,0 +1,40 @@
+<%- include('partials/header'); -%>
+<div id="container-m">
+  <div class="intro-heading">
+    <h1 class="intro-title">YourSpace</h1>
+    <p class="intro-line">A Space For All Your Files</p>
+    <div class="upload">
+      <form class="compose" action="/compose" method="get">
+        <button class="btn btn-primary btn-lg btn-upload">
+          <a class="compose-link" href="/compose"
+            ><i class="bi bi-upload"></i> UPLOAD</a
+          >
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="container" style="text-align: center !important">
+    <div class="row">
+      <%posts.forEach(function (post) {%>
+      <div class="col-lg-4 col-md-6 col-12">
+        <div class="card-f card text-center">
+          <div class="card-body">
+            <h2 class="card-title"><%=(post.title);%></h2>
+            <p class="card-text">
+              <%=(post.content.substring(0,50) +".....")%>
+            </p>
+            <div class="open-btn-div">
+              <a class="box-a" href="/posts/<%=post._id%>">
+                <button class="btn btn-primary open-btn">OPEN</button>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- </a> -->
+      </div>
+      <%});%>
+    </div>
+  </div>
+
+  <%- include( 'partials/footer' ); -%>
+</div>
