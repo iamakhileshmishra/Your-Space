@@ -9,14 +9,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const res = require("express/lib/response");
 const app = express();
-const cloudinary = require("cloudinary").v2;
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
-// const cron = require("node-cron");
 
 app.set("view engine", "ejs");
 
@@ -232,7 +225,7 @@ let port = process.env.PORT;
 if (port == null || port == "") {
   port = 3000;
 }
-
+mongoose.set("strictQuery", false);
 mongoose.connect(process.env.MONGOD_URL,() => {
   console.log("connected to mongodb");
   app.listen(port, () => {
