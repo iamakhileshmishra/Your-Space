@@ -10,28 +10,32 @@ const bcrypt = require("bcrypt");
 const res = require("express/lib/response");
 const app = express();
 
+// Firebase integration
+const firebase = require("firebase/app");
+const {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} = require("firebase/storage");
+
+const firebaseConfig = {
+  apiKey: process.env.API_KEY,
+  authDomain: "your-space-b84f6.firebaseapp.com",
+  projectId: "your-space-b84f6",
+  storageBucket: process.env.BUCKET_URL,
+  messagingSenderId: process.env.MSG_SENDER,
+  appId: process.env.APP_ID,
+  measurementId: process.env.M_ID,
+};
+firebase.initializeApp(firebaseConfig);
+const storage = getStorage();
+const upload = multer({ storage: multer.memoryStorage() });
 
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-// console.log(process.env);
-//storage for the upload
-const storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, "./uploads");
-  },
-  filename: function (request, file, callback) {
-    callback(null, Date.now() + file.originalname);
-  },
-});
-// upload parameter for multer
-const upload = multer({
-  storage: storage,
-  limits: {
-    fieldSize: 1024 * 1024 * 3,
-  },
-});
 const postSchema = {
   title: String,
   content: String,
@@ -59,22 +63,45 @@ app.get("/compose", function (req, res) {
 
 // Create Post
 app.post("/compose", upload.single("myfile"), async function (req, res) {
-  let passHash = "";
-  if (req.body.password) {
-    passHash = await bcrypt.hash(req.body.password, 10);
-  }
 
-  const post = new Post({
-    title: req.body.postTitle,
-    content: req.body.blog,
-    file: req.file.filename,
-    password: passHash,
-  });
-  post.save(function (err) {
-    if (!err) {
-      res.redirect("/");
-    }
-  });
+  const folderName = "uploads"; // Specify the folder name
+  const filePath = `${folderName}/${req.file.originalname}`;
+
+  const StorageRef = ref(storage, filePath);
+  const metadata = {
+    contentType: req.file.mimetype,
+  };
+  uploadBytes(StorageRef, req.file.buffer, metadata)
+    .then(() => {
+      getDownloadURL(StorageRef)
+        .then(async (url) => {
+          let passHash = "";
+          if (req.body.password) {
+            passHash = await bcrypt.hash(req.body.password, 10);
+          }
+
+          const post = new Post({
+            title: req.body.postTitle,
+            content: req.body.blog,
+            file: url,
+            password: passHash,
+          });
+
+          post.save(function (err) {
+            if (!err) {
+              res.redirect("/");
+            }
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send(err);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
 });
 
 // Read Post
@@ -100,38 +127,61 @@ app.get("/posts/:postId/edit", (req, res) => {
     }
   });
 });
+
 app.post("/posts/:postId/edit", upload.single("myfile"), (req, res) => {
-  Post.findById(req.params.postId, (err, post) => {
+  Post.findById(req.params.postId, async (err, post) => {
     if (err) {
       res.send(err);
       return;
     }
-    console.log(req.body, post);
-    const result = bcrypt.compareSync(req.body.password, post.password);
+
+    const result = await bcrypt.compare(req.body.password, post.password);
     if (!result) {
       res.send("Invalid password");
       return;
     }
-    Post.findByIdAndUpdate(
-      req.params.postId,
-      {
-        $set: {
-          title: req.body.title,
-          content: req.body.content,
-          file: req.file.filename,
-        },
-      },
-      (err, update) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Post Updated");
-          res.redirect("/");
-        }
-      }
-    );
+  const folderName = "uploads"; // Specify the folder name
+  const filePath = `${folderName}/${req.file.originalname}`;
+
+  const StorageRef = ref(storage, filePath);
+    const metadata = {
+      contentType: req.file.mimetype,
+    };
+    uploadBytes(StorageRef, req.file.buffer, metadata)
+      .then(() => {
+        getDownloadURL(StorageRef)
+          .then((url) => {
+            Post.findByIdAndUpdate(
+              req.params.postId,
+              {
+                $set: {
+                  title: req.body.title,
+                  content: req.body.content,
+                  file: url,
+                },
+              },
+              (err, update) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log("Post Updated");
+                  res.redirect("/");
+                }
+              }
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).send(err);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send(err);
+      });
   });
 });
+
 
 //For Deleting the post
 app.post("/posts/:postId/delete", function (req, res) {
@@ -151,9 +201,8 @@ app.get("/posts/:postId/view", function (req, res) {
     if (err) {
       res.send(err);
     } else {
-      console.log(post);
       if (!post.password || post.password.length == 0) {
-        res.sendFile(`./uploads/${post.file}`, { root: __dirname });
+        res.redirect(post.file);
         return;
       }
       res.render("view", {
@@ -163,6 +212,7 @@ app.get("/posts/:postId/view", function (req, res) {
     }
   });
 });
+
 
 app.post("/posts/:postId/view", function (req, res) {
   const { password } = req.body;
@@ -177,7 +227,7 @@ app.post("/posts/:postId/view", function (req, res) {
     console.log(password, post.password);
     const result = bcrypt.compareSync(password, post.password);
     if (result) {
-      res.sendFile(`./uploads/${post.file}`, { root: __dirname });
+      res.redirect(post.file);
     } else {
       res.send("Invalid Password");
     }
@@ -191,7 +241,8 @@ app.get("/posts/:postId/download", function (req, res) {
       res.send(err);
     } else {
       if (!post.password || post.password.length == 0) {
-        res.download(`${__dirname}/uploads/${post.file}`, post.file);
+        res.attachment(post.file);
+        res.redirect(post.file);
         return;
       }
       res.render("download", {
@@ -213,7 +264,8 @@ app.post("/posts/:postId/download", function (req, res) {
     }
     const result = bcrypt.compareSync(password, post.password);
     if (result) {
-      res.download(`${__dirname}/uploads/${post.file}`, post.file);
+      res.attachment(post.file);
+      res.redirect(post.file);
     } else {
       res.send("Invalid Password");
     }
@@ -226,10 +278,9 @@ if (port == null || port == "") {
   port = 3000;
 }
 mongoose.set("strictQuery", false);
-mongoose.connect(process.env.MONGOD_URL,() => {
+mongoose.connect(process.env.MONGOD_URL, () => {
   console.log("connected to mongodb");
   app.listen(port, () => {
     console.log("Server started on port 4000");
-    
   });
 });
