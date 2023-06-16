@@ -1,13 +1,31 @@
 # YourSpace 
-> A Space for all your Files --- You can Add, Read, Update, Delete as well Download the file from this 
+> A Space for all your files
 
+- Users can upload password protected files of any format (.pdf,.png,.jpg,.mp4,.docx,etc).
+
+- Users with the link and password can only Edit/Modify the files.
+
+- Implemented CRUD operations on the uploaded Files.
+
+- Developed REST APIs using all HTTP Methods.
+
+- The files uploaded will be removed automatically after 24 hrs if User do not delete it.
 
 ## .env Setup Instruction
 > Add .env file in root Directory and write 
 
-> MONGOD_URL = <MongoDb_URI>
+```
+MONGOD_URL
+PORT
+API_KEY
+APP_ID
+MSG_SENDER
+M_ID
+BUCKET_URL
 
-## Currently Live in [YourSpace-Heroku](https://yourspace-16t1.onrender.com/)
+```
+
+## Currently Live in [YourSpace-Cyclic](https://determined-waistcoat-clam.cyclic.app/)
 
 ![Home Page](/sample-pictures/home-page.jpg)
 ![Home List Page](/sample-pictures/files-list.jpg)
@@ -22,7 +40,7 @@ read, update and delete files.
 - Upload a file
 - Get list of all the files
 - Download a file
-- Update a file
+- Update/Edit a file
 - Delete a file
 
 ## Tech Stack Used
@@ -32,6 +50,8 @@ read, update and delete files.
 - NodeJS
 - EJS
 - MONGODB
+- Firebase Storage
+
 ## Dependencies 
 - Body-Parser
 - Dot env
@@ -44,22 +64,26 @@ read, update and delete files.
 ## To clone and work locally 
 - Clone the Repo locally 
 - run npm install command to install all the modules required for this Project
-- create .env file with your own database URI with key MONGOD_URL and Value your Mongoose connection link
+- create .env file as per Setup Instruction
+
 
 # EndPoints
-Base URL https://yourspace-16t1.onrender.com/
+Base URL https://determined-waistcoat-clam.cyclic.app/
 ## /compose
 
 ![Compose Page](/sample-pictures/compose-page.jpg)
 > It is post route that take multiple values 
 The user can upload the files from this route by clicking on Upload button from the home page 
-It will have three required column asking for title for the file name then a quick description about the file and the file itself
+It will have three required column asking for title for the file name then a quick description about the file and the file itself.
+
+>There is one entry with password and if the user want to keep his file password protected then only he/she can add the password.
+
 On clicking Pubish Button it will redirect to Home Page and show the list of Uploads 
 ```
 {
     title: req.body.postTitle,
     content: req.body.blog,
-    file: req.file.filename,
+    file: url/firebase,
  }
 ```
 
